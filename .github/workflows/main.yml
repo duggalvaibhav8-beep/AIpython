@@ -1,0 +1,37 @@
+name: Python CI
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check Python
+        shell: cmd
+        run: |
+          python --version
+          pip --version
+
+      - name: Create virtual environment
+        shell: cmd
+        run: python -m venv venv
+
+      - name: Install dependencies
+        shell: cmd
+        run: |
+          call venv\Scripts\activate
+          python -m pip install --upgrade pip
+          requirements.txt pip install -r requirements.txt
+
+      - name: Run Python project
+        shell: cmd
+        run: |
+          call venv\Scripts\activate
+          python unified_main.py
