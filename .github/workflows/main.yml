@@ -27,7 +27,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Python project
+      - name: Run Python project with PM2
         run: |
           . venv/bin/activate
-          python unified_main.py
+          pm2 delete aipython-github || true
+          pm2 start "uvicorn unified_main:app --host 0.0.0.0 --port 8001" --name aipython-github
+          pm2 save
