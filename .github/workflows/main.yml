@@ -13,13 +13,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Check Python
-        run: |
-          python3 --version
-          pip3 --version
-
       - name: Create virtual environment
-        run: python3 -m venv venv
+        run: python3 -m venv $VENV
 
       - name: Install dependencies
         run: |
@@ -29,7 +24,7 @@ jobs:
 
       - name: Run Python project with PM2
         run: |
-          . venv/bin/activate
-          pm2 delete aipython-github || true
-          pm2 start "uvicorn unified_main:app --host 0.0.0.0 --port 8001" --name aipython-github
+        
+          pm2 delete aipython-github 
+          pm2 start "uvicorn unified_main:app --host 0.0.0.0 --port 8001" --name aipythons
           pm2 save
