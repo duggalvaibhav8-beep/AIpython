@@ -24,7 +24,7 @@ jobs:
 
       - name: Run Python project with PM2
         run: |
-        
-          pm2 delete aipython-github 
-          pm2 start "uvicorn unified_main:app --host 0.0.0.0 --port 8001" --name aipythons
+          . venv/bin/activate
+          pm2 delete aipythons
+          pm2 start "uvicorn unified_main:app --host 0.0.0.0 --port 8001" --name ais
           pm2 save
