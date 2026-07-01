@@ -1,30 +1,27 @@
-name: Python CI
+name: Deploy Python App
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:
+    branches:
+      - main
 
 jobs:
-  build:
-    runs-on: self-hosted
+  deploy:
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.IP }}
+          username: ubuntu
+          key: ${{ secrets.PRIVATE_KEY }}
+          script: |
+            cd /home/ubuntu/AIpython
+            git pull origin main
+            
+            ./venv/bin/pip install -r requirements.txt
+            pm2 delete backend || true
 
-      - name: Create virtual environment
-        run: python3 -m venv venv
-
-      - name: Install dependencies
-        run: |
-          . venv/bin/activate
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Run Python project with PM2
-        run: |
-          . venv/bin/activate
-          pm2 delete aipythons
-          pm2 start "uvicorn unified_main:app --host 0.0.0.0 --port 8001" --name ais
-          pm2 save
+            pm2 start "./venv/bin/python -m streamlit run app.py --server.port 8501 --server.address 0.0.0.0" --name backend
+            pm2 save
